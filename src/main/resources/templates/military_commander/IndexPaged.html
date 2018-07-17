@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>三國志武将検索</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+	 crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt"
+	 crossorigin="anonymous">
+	<!-- <link th:href="@{/webjars/bootstrap/4.1.1/css/bootstrap.min.css}" rel="stylesheet" />
+	<script type="text/javascript" th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/bootstrap/4.1.1/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script> -->
+</head>
+
+<body>
+	<div class="container">
+		<h2>三國志武将検索ッ！！</h2>
+		<form method="POST" action="/military_commander/IndexPaged" th:action="@{/threekingdom/military_commander/IndexPaged}" th:object="${condition}">
+			<!-- 検索条件 -->
+			<div class="row">
+				<div class="form-inline pt-1">
+					<label class="col-form-label col-form-label-sm mx-sm-1" for="military_commander_name">武将名</label>
+					<input id="military_commander_name" name="militaryCommanderName" th:field="${condition.militaryCommanderName}" class="form-control mx-sm-1 form-control-sm">
+
+					<label class="col-form-label col-form-label-sm mx-sm-1" for="phonetic">カナ</label>
+					<input id="phonetic" name="phonetic" th:field="${condition.phonetic}" class="form-control mx-sm-1 form-control-sm">
+
+					<label class="col-form-label col-form-label-sm mx-sm-1" for="sex_div">性別</label>
+					<select id="sex_div_id" name="sexDivId" th:field="${condition.sexDivId}" class="form-control mx-sm-1 form-control-sm">
+						<option value="0"></option>
+						<option th:each="item: ${sexDivList}" th:value="${item.sexDivId}" th:inline="text">[[${item.sexDivName}]]</option>
+					</select>
+					<!-- <select id="sex_div_id" name="sexDivId" th:field="${condition.sexDivId}" class="form-control mx-sm-1 form-control-sm">
+						<option value=""></option>
+						<option value="1">男</option>
+						<option value="2">女</option>
+					</select> -->
+
+					<label class="col-form-label col-form-label-sm mx-sm-1" for="is_dynasty_warriors_appeared">無双登場済み</label>
+					<input type="checkbox" id="is_dynasty_warriors_appeared" name="isDynastyWarriorsAppeared" th:field="${condition.isDynastyWarriorsAppeared}"
+					 class="form-control mx-sm-1 form-control-sm">
+
+				</div>
+				<div class="form-inline pt-1 collapse multi-collapse" id="multiCollapse1">
+					<label class="col-form-label col-form-label-sm mx-sm-1">生年</label>
+					<input type="number" id="birth_year_from" name="birthYearFrom" th:field="${condition.birthYearFrom}" class="form-control mx-sm-1 form-control-sm"> ～
+					<input type="number" id="birth_year_to" name="birthYearTo" th:field="${condition.birthYearTo}" class="form-control mx-sm-1 form-control-sm">
+
+					<label class="col-form-label col-form-label-sm mx-sm-1">没年</label>
+					<input type="number" id="death_year_from" name="deathYearFrom" th:field="${condition.deathYearFrom}" class="form-control mx-sm-1 form-control-sm"> ～
+					<input type="number" id="death_year_to" name="deathYearTo" th:field="${condition.deathYearTo}" class="form-control mx-sm-1 form-control-sm">
+				</div>
+				<div class="form-inline pt-1 collapse multi-collapse" id="multiCollapse2">
+					<label class="col-form-label col-form-label-sm mx-sm-1">統率</label>
+					<input type="number" id="leadership_from" name="leadershipFrom" th:field="${condition.leadershipFrom}" class="form-control mx-sm-1 form-control-sm"> ～
+					<input type="number" id="leadership_to" name="leadershipTo" th:field="${condition.leadershipTo}" class="form-control mx-sm-1 form-control-sm">
+
+					<label class="col-form-label col-form-label-sm mx-sm-1">武力</label>
+					<input type="number" id="military_force_from" name="militaryForceFrom" th:field="${condition.militaryForceFrom}" class="form-control mx-sm-1 form-control-sm"> ～
+					<input type="number" id="military_force_to" name="militaryForceTo" th:field="${condition.militaryForceTo}" class="form-control mx-sm-1 form-control-sm">
+				</div>
+				<div class="form-group form-inline pt-1 collapse multi-collapse" id="multiCollapse3">
+					<label class="col-form-label col-form-label-sm mx-sm-1">知力</label>
+					<input type="number" id="intellect_from" name="intellectFrom" th:field="${condition.intellectFrom}" class="form-control mx-sm-1 form-control-sm"> ～
+					<input type="number" id="intellect_to" name="intellectTo" th:field="${condition.intellectTo}" class="form-control mx-sm-1 form-control-sm">
+
+					<label class="col-form-label col-form-label-sm mx-sm-1">政治</label>
+					<input type="number" id="politics_from" name="politicsFrom" th:field="${condition.politicsFrom}" class="form-control mx-sm-1 form-control-sm"> ～
+					<input type="number" id="politics_to" name="politicsTo" th:field="${condition.politicsTo}" class="form-control mx-sm-1 form-control-sm">
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group form-inline pt-1">
+					<button type="submit" class="btn btn-primary mx-sm-1">検索</button>
+					<button id="btnClear" type="button" class="btn btn-primary mx-sm-1">クリア</button>
+					<button id="searchConditionPanel" class="btn btn-primary mx-sm-1" type="button" data-toggle="collapse" data-target=".multi-collapse"
+					 aria-expanded="true" aria-controls="multiCollapse1 multiCollapse2 multiCollapse3">
+						詳細条件を開く
+					</button>
+				</div>
+			</div>
+
+			<hr>
+
+			<!-- ページャ -->
+			<div th:if="${page != null}" th:fragment='paginationbar' class="row">
+				<div style="margin-left: 15px;" class="pt-1">
+					<span style="font-weight: bold; ">該当件数 : [[${page.totalElements}]]</span>
+					<span style="font-weight: bold; " class="pl-2 pr-2">[[${page.start}]]&nbsp;~&nbsp;[[${page.last}]]</span>
+				</div>
+				<ul class='pagination'>
+					<li class="page-item" th:classappend="${page.firstPage}?'disabled':''">
+						<span class="page-link" id="pageActionFirst" data-original-title="先頭へ" data-toggle="tooltip" data-placement="bottom" data-action="first"
+						 th:data-disabled="${page.firstPage}?'True':''" data-pagenumber="0" th:data-href="@{${page.url}(page=0,size=${page.size})}">
+							<i class="fas fa-fast-backward"></i>
+						</span>
+					</li>
+					<li class="page-item" th:classappend="${page.hasPreviousPage}? '' : 'disabled'">
+						<span class="page-link" id="pageActionPrevious" data-original-title="前へ" data-toggle="tooltip" data-placement="bottom" data-action="previous"
+						 th:data-disabled="${page.hasPreviousPage}? '' : 'True'" th:data-pagenumber="${page.number-2}" th:data-href="@{${page.url}(page=${page.number-2},size=${page.size})}">
+							<i class="fas fa-caret-left"></i>
+						</span>
+					</li>
+
+					<li class="page-item" th:each='item : ${page.items}' th:classappend="${item.current}? 'active' : ''">
+						<span class="page-link" style="font-weight: bold;" name="pageActionCurrent" data-action="current" th:data-disabled="${item.current}? 'True' : ''"
+						 th:data-pagenumber="${item.number}" th:data-href="@{${page.url}(page=${item.number-1},size=${page.size})}" th:text='${item.number}'>1</span>
+					</li>
+
+					<li class="page-item" th:classappend="${page.hasNextPage}? '' : 'disabled'">
+						<span class="page-link" id="pageActionNext" data-original-title="次へ" data-toggle="tooltip" data-placement="bottom" data-action="next"
+						 th:data-disabled="${page.hasNextPage}? '' : 'True'" th:data-pagenumber="${page.number}" th:data-href="@{${page.url}(page=${page.number},size=${page.size})}">
+							<i class="fas fa-caret-right"></i>
+						</span>
+					</li>
+					<li class="page-item" th:classappend="${page.lastPage}? 'disabled' : ''">
+						<span class="page-link" id="pageActionLast" data-original-title="末尾へ" data-toggle="tooltip" data-placement="bottom" data-action="last"
+						 th:data-disabled="${page.lastPage}? 'True' : ''" th:data-pagenumber="${page.totalPages - 1}" th:data-href="@{${page.url}(page=${page.totalPages - 1},size=${page.size})}">
+							<i class="fas fa-fast-forward"></i>
+						</span>
+					</li>
+				</ul>
+			</div>
+
+			<!-- 検索結果 -->
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>武将名</th>
+						<th>カナ</th>
+						<th>性別</th>
+						<th>生年</th>
+						<th>没年</th>
+						<th>統率</th>
+						<th>武力</th>
+						<th>知力</th>
+						<th>政治</th>
+						<th>無双登場済み</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="row:${pagedList}">
+						<td>
+							<a target="_blank" th:href="@{'http://sangokushi13wiki.wiki.fc2.com/wiki/' + ${row.militaryCommanderName}}" th:text="${row.militaryCommanderName}">
+							</a>
+						</td>
+						<td th:text="${row.phonetic}"></td>
+						<td th:text="${row.sexDivName}"></td>
+						<td th:text="${row.birthYear}"></td>
+						<td th:text="${row.deathYear}"></td>
+						<td th:text="${row.leadership}"></td>
+						<td th:text="${row.militaryForce}"></td>
+						<td th:text="${row.intellect}"></td>
+						<td th:text="${row.politics}"></td>
+						<td th:text="${row.isDynastyWarriorsAppeared}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+		</form>
+
+	</div>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+	 crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+	 crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+	 crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+		$(function () {
+
+			// function getActionPath(action) {
+			// 	var locationPath = location.pathname;
+			// 	var lastPath = locationPath.substr(locationPath.lastIndexOf('/') + 1);
+			// 	var newPath = locationPath.replace(lastPath, action);
+			// 	return newPath;
+			// }
+
+			$('#btnClear').click(function () {
+				var theForm = $('form')[0];
+				theForm.method = "get";
+				theForm.submit();
+
+			});
+
+			$('.multi-collapse').on('show.bs.collapse', function () {
+				$('#searchConditionPanel').text("詳細条件を開く");
+			});
+			$('.multi-collapse').on('hide.bs.collapse', function () {
+				$('#searchConditionPanel').text("詳細条件を閉じる");
+			});
+
+			//ページャリンク各クリックイベント
+			$('#pageActionFirst').click(function () {
+				var element = $(this);
+				console.log("pageActionFirst");
+				var disabled = element.data("disabled");
+				if (disabled === "True") {
+					return false;
+				}
+				//var parent = element.parent();
+				//if (parent.hasClass("disabled")) {
+				//    return false;
+				//}
+				// var controller = $('#ax_controllerName').val();
+				// var action = element.data("action");
+				var theForm = $('form')[0];
+				var url = element.data("href");
+				theForm.action = url;
+				// theForm.action = getActionPath(action);
+				//theForm.action = "/" + controller + "/" + action;
+				theForm.submit();
+			});
+
+			$('#pageActionPrevious').click(function () {
+				var element = $(this);
+				console.log("pageActionPrevious");
+				var disabled = element.data("disabled");
+				if (disabled === "True") {
+					return false;
+				}
+				//var parent = element.parent();
+				//if (parent.hasClass("disabled")) {
+				//    return false;
+				//}
+				// var controller = $('#ax_controllerName').val();
+				// var action = element.data("action");
+				// var pagenumber = element.data("pagenumber");
+				// $('#ax_pageNumber').val(pagenumber);
+				var theForm = $('form')[0];
+				var url = element.data("href");
+				theForm.action = url;
+				// theForm.action = getActionPath(action);
+				//theForm.action = "/" + controller + "/" + action;
+				theForm.submit();
+			});
+
+			$('#pageActionNext').click(function () {
+				var element = $(this);
+				console.log("pageActionNext");
+				var disabled = element.data("disabled");
+				console.log(typeof disabled);
+				if (disabled === "True") {
+					return false;
+				}
+				//var parent = element.parent();
+				//if (parent.hasClass("disabled")) {
+				//    return false;
+				//}
+				// var controller = $('#ax_controllerName').val();
+				// var action = element.data("action");
+				// var pagenumber = element.data("pagenumber");
+				// $('#ax_pageNumber').val(pagenumber);
+				var theForm = $('form')[0];
+				var url = element.data("href");
+				theForm.action = url;
+				// theForm.action = getActionPath(action);
+				//theForm.action = "/" + controller + "/" + action;
+				theForm.submit();
+			});
+
+			$('#pageActionLast').click(function () {
+				var element = $(this);
+				console.log("pageActionLast");
+				var disabled = element.data("disabled");
+				if (disabled === "True") {
+					return false;
+				}
+				//var parent = element.parent();
+				//if (parent.hasClass("disabled")) {
+				//    return false;
+				//}
+				// var controller = $('#ax_controllerName').val();
+				// var action = element.data("action");
+				var theForm = $('form')[0];
+				var url = element.data("href");
+				theForm.action = url;
+				// theForm.action = getActionPath(action);
+				//theForm.action = "/" + controller + "/" + action;
+				theForm.submit();
+			});
+
+			$('span[name="pageActionCurrent"]').click(function () {
+				var element = $(this);
+				console.log("pageActionCurrent");
+				var disabled = element.data("disabled");
+				if (disabled === "True") {
+					return false;
+				}
+				//var parent = element.parent();
+				//if (parent.hasClass("disabled")) {
+				//    return false;
+				//}
+				// var controller = $('#ax_controllerName').val();
+				// var action = element.data("action");
+				// var pagenumber = element.data("pagenumber");
+				// $('#ax_currentPageNumber').val(pagenumber);
+				var theForm = $('form')[0];
+				var url = element.data("href");
+				theForm.action = url;
+				// theForm.action = getActionPath(action);
+				//theForm.action = "/" + controller + "/" + action;
+				theForm.submit();
+
+				$('[data-toggle="tooltip"]').tooltip();
+
+			});
+		});
+	</script>
+</body>
+
+</html>
